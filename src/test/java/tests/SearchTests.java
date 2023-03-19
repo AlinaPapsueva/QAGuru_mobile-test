@@ -12,18 +12,17 @@ import static io.appium.java_client.AppiumBy.accessibilityId;
 import static io.appium.java_client.AppiumBy.id;
 import static io.qameta.allure.Allure.step;
 
-
 public class SearchTests extends TestBase {
 
     @Test
     @Tag("android")
-    @DisplayName("Проверка поиска")
+    @DisplayName("Проверка поиска статей")
     void successfulSearchTest() {
-        step("Ввод слова в строку поиска", () -> {
+        step("Ввод текста в поисковую строку", () -> {
             $(accessibilityId("Search Wikipedia")).click();
             $(id("org.wikipedia.alpha:id/search_src_text")).sendKeys("java");
         });
-        step("Проверка, что отобразились найденные статьи", () ->
+        step("Проверка, что статьи по запросу найдены", () ->
                 $$(id("org.wikipedia.alpha:id/page_list_item_title"))
                         .shouldHave(sizeGreaterThan(0)));
     }
@@ -32,31 +31,16 @@ public class SearchTests extends TestBase {
     @Tag("android")
     @DisplayName("Проверка ошибки при открытии статьи")
     void openArticleWithError() {
-        step("Ввод слова в строку поиска", () -> {
+        step("Ввод текста в поисковую строку", () -> {
             $(accessibilityId("Search Wikipedia")).click();
             $(id("org.wikipedia.alpha:id/search_src_text")).sendKeys("Bus");
         });
-        step("Открытие найденной статьи", () ->
+        step("Открытие статьи", () ->
                 $$(id("org.wikipedia.alpha:id/page_list_item_title")).first().click()
         );
-        step("Проверка, что при открытии статьи появилась ошибка", () ->
+        step("Проверка, что приходит ошибка", () ->
                 $(id("org.wikipedia.alpha:id/view_wiki_error_text"))
                         .shouldHave(exactText("An error occurred"))
         );
     }
-
-//    @Test
-//    @Tag("ios")
-//    @DisplayName("?")
-//    public void searchIosTest() {
-//
-//        step("Поиск контента", () -> {
-//            $(accessibilityId("Text Button")).click();
-//            $(id("Text Input")).sendKeys("hello@browserstack.com");
-//        });
-//        step("Проверка результата", () -> {
-//            $(id("Text Output"))
-//                    .shouldHave(visible);
-//        });
-//    }
 }
