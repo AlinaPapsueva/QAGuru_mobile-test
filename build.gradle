@@ -1,19 +1,67 @@
 plugins {
-    id 'java'
+    id 'java-library'
+    id 'io.qameta.allure' version '2.10.0'
+    id "io.freefair.lombok" version "6.0.0-m2"
 }
-
-group 'papsueva.alina'
-version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+def allureVersion = "2.19.0"
+
+allure {
+    report {
+        version.set(allureVersion)
+    }
+    adapter {
+        aspectjWeaver.set(true)
+        frameworks {
+            junit5 {
+                adapterVersion.set(allureVersion)
+            }
+        }
+    }
 }
 
-test {
+dependencies {
+    testImplementation(
+            "com.codeborne:selenide:6.11.2",
+            "io.qameta.allure:allure-selenide:2.19.0",
+            "io.rest-assured:rest-assured:5.3.0",
+            "io.qameta.allure:allure-rest-assured:2.19.0",
+            "com.github.javafaker:javafaker:1.0.2",
+            "io.appium:java-client:8.3.0",
+            "org.junit.jupiter:junit-jupiter:5.9.2",
+            'org.aeonbits.owner:owner:1.0.4',
+            "org.slf4j:slf4j-simple:2.0.5",
+            'org.projectlombok:lombok:1.18.22'
+    )
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test) {
+    systemProperties(System.getProperties())
     useJUnitPlatform()
+
+    testLogging {
+        lifecycle {
+            events "started", "skipped", "failed", "standard_error", "standard_out"
+            exceptionFormat "short"
+        }
+    }
+}
+task android(type: Test) {
+    useJUnitPlatform {
+        includeTags 'android'
+    }
+}
+
+task ios(type: Test) {
+    useJUnitPlatform {
+        includeTags 'ios'
+    }
 }
