@@ -1,0 +1,29 @@
+package androidstudio.lesson22.helpers;
+
+import androidstudio.lesson22.config.AndroidBrowserstackConfig;
+import org.aeonbits.owner.ConfigFactory;
+
+import static androidstudio.lesson22.helpers.CustomAllureListener.withCustomTemplates;
+import static io.restassured.RestAssured.given;
+import static java.lang.String.format;
+
+public class Browserstack {
+
+    public static AndroidBrowserstackConfig config = ConfigFactory.create(AndroidBrowserstackConfig.class);
+
+    public static String getVideoUrl(String sessionId) {
+        String url = format("https://api.browserstack.com/app-automate/sessions/%s.json", sessionId);
+
+        return given()
+                .log().all()
+                .filter(withCustomTemplates())
+                .auth().basic(config.getUser(),
+                        config.getKey())
+                .when()
+                .get(url)
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract().path("automation_session.video_url");
+    }
+}
